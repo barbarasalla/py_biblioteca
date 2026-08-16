@@ -66,7 +66,6 @@ class Biblioteca:
             f"{livro.id}."
         )
 
-
     def listar_livros(self):
 
         if not self.livros:

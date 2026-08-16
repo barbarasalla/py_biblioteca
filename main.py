@@ -1,16 +1,18 @@
 from biblioteca import Biblioteca
 from livro import Livro
+from buscar_livro_api import buscar_livro_por_isbn
 
 def menu():
 
     while True:
 
         print("\n===== BIBLIOTECA =====")
-        print("1 - Cadastrar")
-        print("2 - Listar")
-        print("3 - Buscar")
-        print("4 - Atualizar")
-        print("5 - Excluir")
+        print("1 - Cadastrar livro manualmente")
+        print("2 - Cadastrar livro por ISBN")
+        print("3 - Listar livros")
+        print("4 - Buscar livro")
+        print("5 - Atualizar livro")
+        print("6 - Excluir livro")
         print("0 - Sair")
 
         opcao = input("Escolha: ")
@@ -29,10 +31,13 @@ def menu():
             biblioteca.salvar()
 
         elif opcao == "2":
+            cadastrar_por_isbn()
+
+        elif opcao == "3":
 
             biblioteca.listar_livros()
 
-        elif opcao == "3":
+        elif opcao == "4":
 
             print("Você pode buscar por: ")
             print("1 - Por Titulo")
@@ -51,7 +56,7 @@ def menu():
             else:
                 print("Opção não disponível")
 
-        elif opcao == "4":
+        elif opcao == "5":
 
             id_livro = int(input("ID: "))
             titulo = input("Novo título: ")
@@ -67,7 +72,7 @@ def menu():
 
             biblioteca.salvar()
 
-        elif opcao == "5":
+        elif opcao == "6":
 
             id_livro = int(input("ID: "))
 
@@ -83,6 +88,28 @@ def menu():
         else:
 
             print("Opção inválida.")
+
+def cadastrar_por_isbn():
+    isbn = input("Digite o ISBN: " )
+
+    dados = buscar_livro_por_isbn(isbn)
+
+    if dados is None:
+        print("Não foi possível obter os dados do livro.")
+        return
+
+    print("\n--- LIVRO ENCONTRADO ---")
+
+    print(f"Título: {dados['titulo']}")
+    print(f"Autor: {dados['autor']}")
+    print(f"Ano: {dados['ano']}")
+
+    confirmar = input("\nDeseja cadastrar este livro? (s/n): ")
+
+    if confirmar.lower() == "s":
+        biblioteca.adicionar_livro(dados["titulo"], dados["autor"], dados["ano"])
+
+    biblioteca.salvar()
 
 if __name__ == "__main__":
 
