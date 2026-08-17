@@ -60,9 +60,9 @@ class LivroRepository:
     def buscar_por_autor(self, autor):
         cursor = self.conexao.cursor()
 
-        cursor.execute("SELECT * FROM livros WHERE autor = ?", (autor,))
+        cursor.execute("SELECT * FROM livros WHERE LOWER(autor) = ?", (autor.lower(),))
 
-        registros = cursor.fetchmany()
+        registros = cursor.fetchall()
 
         if registros is None:
             return None
@@ -77,14 +77,22 @@ class LivroRepository:
     def buscar_por_titulo(self, titulo):
         cursor = self.conexao.cursor()
 
-        cursor.execute("SELECT * FROM livros WHERE tiutlo = :titulo", {"titulo": titulo})
+        cursor.execute(
+            "SELECT * FROM livros WHERE LOWER(titulo) = LOWER(:titulo)",
+            {"titulo": titulo}
+        )
 
-        registro = cursor.fetchone()
+        registros = cursor.fetchall()
 
-        if registro is None: 
+        if registros is None: 
             return None
 
-        return Livro[registro[0], registro[1], registro[2], registro[3]]
+        livros = []
+        for registro in registros:
+            livro = Livro(registro[0], registro[1], registro[2], registro[3]) 
+            livros.append(livro)
+
+        return livros
 
 
     def excluir(self, id):
