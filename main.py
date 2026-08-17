@@ -28,8 +28,6 @@ def menu():
                 ano
             )
 
-            biblioteca.salvar()
-
         elif opcao == "2":
             cadastrar_por_isbn()
 
@@ -70,15 +68,11 @@ def menu():
                 ano
             )
 
-            biblioteca.salvar()
-
         elif opcao == "6":
 
             id_livro = int(input("ID: "))
 
             biblioteca.excluir_livro(id_livro)
-
-            biblioteca.salvar()
 
         elif opcao == "0":
 
@@ -108,8 +102,6 @@ def cadastrar_por_isbn():
 
     if confirmar.lower() == "s":
         biblioteca.adicionar_livro(dados["titulo"], dados["autor"], dados["ano"])
-
-    biblioteca.salvar()
 
 if __name__ == "__main__":
 

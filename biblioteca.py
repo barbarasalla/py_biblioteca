@@ -1,116 +1,88 @@
 import json
 
 from livro import Livro
+from livro_repository import LivroRepository
 
 class Biblioteca:
 
     def __init__(self):
-        self.livros = []
-
-        self.proximo_id = 1
-
-    def salvar(self):
-        dados = []
-
-        for livro in self.livros:
-            dados.append(livro.to_dict())
-
-        with open("biblioteca.json", "w", encoding="utf-8") as arquivo:
-            json.dump(
-                dados,
-                arquivo,
-                ensure_ascii=False, # Para não transformar caracteres especiais em códigos ASCII
-                indent=4 # Define a indentação do JSON (4 espaços)
-            )
+        self.repository = LivroRepository()
 
     def carregar(self):
         try:
             with open("biblioteca.json", "r", encoding="utf-8") as arquivo:
                 dados = json.load(arquivo)
 
-            self.livros = []
-
             for item in dados:
                 livro = Livro.from_dict(item)
-
-                self.livros.append(livro)
-
-            if self.livros:
-                self.proximo_id = max(
-                    livro.id for livro in self.livros
-                ) + 1
+                livro.id = None
+                self.repository.salvar(livro)
 
         except FileNotFoundError:
-            self.livros = []
-            self.proximo_id = 1
+            print("Nõa foi possível carregar dados do arquivo 'biblioteca.json'!")
+            return
 
 
     def adicionar_livro(self, titulo, autor, ano):
 
         # Cria um objeto Livro
         livro = Livro(
-            self.proximo_id,
+            None,
             titulo,
             autor,
             ano
         )
 
-        # Adiciona o objeto à lista
-        self.livros.append(livro)
-
-        # Incrementa o ID para o próximo livro
-        self.proximo_id += 1
+        self.repository.salvar(livro)
 
         print(
-            f"Livro '{titulo}' cadastrado com ID "
-            f"{livro.id}."
+            f"Livro '{titulo}' cadastrado com sucesso!"
         )
 
     def listar_livros(self):
 
-        if not self.livros:
+        livros = self.repository.listar()
+
+        if not livros:
             print("Nenhum livro cadastrado.")
             return
 
         print("\n--- LIVROS ---")
 
-        for livro in self.livros:
+        for livro in livros:
             livro.exibir()
-
 
     def buscar_livro_por_titulo(self, titulo):
 
-        encontrados = []
+        encontrados = self.repository.buscar_por_titulo(titulo)
 
-        for livro in self.livros:
-
-            if titulo.lower() in livro.titulo.lower():
-                encontrados.append(livro)
-
-        if not encontrados:
+        if encontrados is None:
             print("Nenhum livro encontrado.")
             return
 
         print("\n--- LIVROS ENCONTRADOS ---")
-
         for livro in encontrados:
             livro.exibir()
 
     def buscar_por_autor(self, autor):
 
-        encontrados = []
+        encontrados = self.repository.buscar_por_autor(autor)
 
-        for livro in self.livros:
-            if autor.lower() in livro.autor.lower():
-                encontrados.append(livro)
-
-        if not encontrados:
+        if encontrados is None:
             print(f"Nenhum livro encontrado para o autor {autor}")
+            return
 
         print("\n--- LIVROS ENCONTRADOS ---")
         for livro in encontrados:
             livro.exibir()
 
+    def buscar_por_id(self, id):
+        livro = self.repository.buscar_por_id(id)
+
+        if livro is None:
+            return None
+
+        return livro
 
     def atualizar_livro(
         self,
@@ -119,29 +91,28 @@ class Biblioteca:
         novo_autor,
         novo_ano
     ):
+        livro = self.repository.buscar_por_id(id_livro)
 
-        for livro in self.livros:
+        if livro is None:
+            print("Livro não encontrado.")
+            return
 
-            if livro.id == id_livro:
+        livro.titulo = novo_titulo
+        livro.autor = novo_autor
+        livro.ano = novo_ano
 
-                livro.titulo = novo_titulo
-                livro.autor = novo_autor
-                livro.ano = novo_ano
+        self.repository.atualizar(livro)
 
-                print("Livro atualizado com sucesso!")
-                return
-
-        print("Livro não encontrado.")
+        print("Livro atualizado com sucesso!")
 
     def excluir_livro(self, id_livro):
 
-        for livro in self.livros:
+        livro = self.repository.buscar_por_id(id_livro)
 
-            if livro.id == id_livro:
+        if livro is None:
+            print("Livro não encontrado.")
+            return
 
-                self.livros.remove(livro)
+        self.repository.excluir(id_livro)
 
-                print("Livro removido com sucesso!")
-                return
-
-        print("Livro não encontrado.")
+        print(f"Livro '{livro.titulo}' removido com sucesso!")
