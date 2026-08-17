@@ -1,6 +1,141 @@
-from biblioteca import Biblioteca
+from biblioteca_carga_inicial import BibliotecaCargaInicial
+from livro_service import LivroService
 from livro import Livro
-from buscar_livro_api import buscar_livro_por_isbn
+
+def cadastrar_livro():
+    print("\n--- CADASTRAR LIVRO ---")
+
+    titulo = input("Título: ")
+    autor = input("Autor: ")
+    ano = int(input("Ano: "))
+
+    livro = service.cadastrar_livro(
+        titulo,
+        autor,
+        ano
+    )
+
+    print(f"Livro cadastrado com ID {livro.id}.")
+
+def cadastrar_por_isbn():
+    print("\n--- CADASTRAR POR ISBN ---")
+
+    isbn = input("Digite o ISBN: ")
+
+    print("Consultando API...")
+
+    livro = service.cadastrar_por_isbn(isbn)
+
+    if livro is None:
+        print("Não foi possível encontrar o livro.")
+        return
+
+    print("\n--- LIVRO ENCONTRADO ---")
+    livro.exibir()
+
+    print("Livro cadastrado com sucesso!")
+
+def listar_livros():
+    print("\n--- LISTA DE LIVROS ---")
+
+    livros = service.listar_livros()
+
+    if not livros:
+        print("Nenhum livro cadastrado.")
+        return
+
+    for livro in livros:
+        livro.exibir()
+
+def buscar_livro():
+    print("\n--- BUSCAR LIVRO ---")
+    print("Você pode buscar por: ")
+    print("1 - Por Titulo")
+    print("2 - Por Autor")
+    print("3 - Por ID")
+
+    buscarPor = int(input("Digite o índice do campo que deseja buscar: "))
+
+    livros = []
+    if buscarPor == 1:
+        titulo = input("Título para buscar: ")
+        livros = service.buscar_por_titulo(titulo)
+    elif buscarPor == 2:
+        autor = input("Autor(a) para buscar: ")
+        livros = service.buscar_por_autor(autor)
+    elif buscarPor == 3:
+        id_livro = input("Id para buscar: ")
+        livro = service.buscar_por_id(id_livro)
+        if livro is not None:
+            livros.append(livro)
+    else:
+        print("Opção não disponível")
+        return
+
+    if livros is None or len(livros) == 0:
+        print("Nenhum livro encontrado.")
+        return
+
+    print("\n--- LIVROS ENCONTRADOS ---")
+    for livro in livros:
+        livro.exibir()
+
+def buscar_livro_por_id(id_livro):
+    print("\n--- BUSCAR LIVRO ---")
+
+    try:
+        livro = service.buscar_livro(id_livro)
+
+        if livro is None:
+            print("Livro não encontrado.")
+            return
+
+        livro.exibir()
+
+    except ValueError:
+        print("Digite um ID válido.")
+
+def atualizar_livro():
+    print("\n--- ATUALIZAR LIVRO ---")
+
+    try:
+        id_livro = int(input("Digite o ID: "))
+
+        titulo = input("Novo título: ")
+        autor = input("Novo autor: ")
+        ano = int(input("Novo ano: "))
+
+        sucesso = service.atualizar_livro(
+            id_livro,
+            titulo,
+            autor,
+            ano
+        )
+
+        if sucesso:
+            print("Livro atualizado com sucesso!")
+        else:
+            print("Livro não encontrado.")
+
+    except ValueError:
+        print("Dados inválidos.")
+
+
+def excluir_livro():
+    print("\n--- EXCLUIR LIVRO ---")
+
+    try:
+        id_livro = int(input("Digite o ID: "))
+
+        sucesso = service.excluir_livro(id_livro)
+
+        if sucesso:
+            print("Livro excluído com sucesso!")
+        else:
+            print("Livro não encontrado.")
+
+    except ValueError:
+        print("Digite um ID válido.")
 
 def menu():
 
@@ -18,93 +153,32 @@ def menu():
         opcao = input("Escolha: ")
 
         if opcao == "1":
-            titulo = input("Título: ")
-            autor = input("Autor: ")
-            ano = int(input("Ano: "))
-
-            biblioteca.adicionar_livro(
-                titulo,
-                autor,
-                ano
-            )
+            cadastrar_livro()
 
         elif opcao == "2":
             cadastrar_por_isbn()
 
         elif opcao == "3":
-
-            biblioteca.listar_livros()
+            listar_livros()
 
         elif opcao == "4":
-
-            print("Você pode buscar por: ")
-            print("1 - Por Titulo")
-            print("2 - Por Autor")
-
-            buscarPor = int(input("Digite o índice do campo que deseja buscar: "))
-
-            if buscarPor == 1:
-                titulo = input("Título para buscar: ")
-                biblioteca.buscar_livro_por_titulo(titulo)
-
-            elif buscarPor == 2:
-                autor = input("Autor(a) para buscar: ")
-                biblioteca.buscar_por_autor(autor)
-
-            else:
-                print("Opção não disponível")
+            buscar_livro()
 
         elif opcao == "5":
-
-            id_livro = int(input("ID: "))
-            titulo = input("Novo título: ")
-            autor = input("Novo autor: ")
-            ano = int(input("Novo ano: "))
-
-            biblioteca.atualizar_livro(
-                id_livro,
-                titulo,
-                autor,
-                ano
-            )
+            atualizar_livro()
 
         elif opcao == "6":
-
-            id_livro = int(input("ID: "))
-
-            biblioteca.excluir_livro(id_livro)
+            excluir_livro()
 
         elif opcao == "0":
-
             print("Programa encerrado.")
             break
 
         else:
-
             print("Opção inválida.")
 
-def cadastrar_por_isbn():
-    isbn = input("Digite o ISBN: " )
-
-    dados = buscar_livro_por_isbn(isbn)
-
-    if dados is None:
-        print("Não foi possível obter os dados do livro.")
-        return
-
-    print("\n--- LIVRO ENCONTRADO ---")
-
-    print(f"Título: {dados['titulo']}")
-    print(f"Autor: {dados['autor']}")
-    print(f"Ano: {dados['ano']}")
-
-    confirmar = input("\nDeseja cadastrar este livro? (s/n): ")
-
-    if confirmar.lower() == "s":
-        biblioteca.adicionar_livro(dados["titulo"], dados["autor"], dados["ano"])
 
 if __name__ == "__main__":
-
-    biblioteca = Biblioteca()
-    biblioteca.carregar()
+    service = LivroService()
+    biblioteca = BibliotecaCargaInicial()
     menu()

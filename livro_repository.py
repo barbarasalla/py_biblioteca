@@ -114,5 +114,12 @@ class LivroRepository:
 
         self.conexao.commit()
 
+    def existe_livros(self):
+        cursor = self.conexao.cursor()
+
+        cursor.execute("SELECT 1 FROM livros LIMIT 1")
+
+        return cursor.fetchone() is not None
+
     def fechar(self):
         self.conexao.close()
