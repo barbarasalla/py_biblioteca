@@ -25,10 +25,9 @@ class LivroService:
     
         # Cria um objeto Livro
         livro = Livro(
-            None,
-            titulo,
-            autor,
-            ano
+            titulo=titulo,
+            autor=autor,
+            ano=ano
         )
 
         self.repository.salvar(livro)
