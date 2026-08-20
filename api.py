@@ -10,7 +10,7 @@ Base.metadata.create_all(engine)
 app = FastAPI()
 
 
-def get_service():             # Função executada pelo FastAPI
+def get_service():          # SETUP # Função executada pelo FastAPI
 
     session = SessionLocal()        # Cria uma sessão com o banco.
 
@@ -24,7 +24,7 @@ def get_service():             # Função executada pelo FastAPI
                             # Quando a execução for retomada, ela continua a partir do yield.
                             
     finally:                # Executa de qualquer forma, mesmo que haja uma exceção
-        session.close()
+        session.close() # TEARDOWN
 
 
 @app.get("/")
@@ -67,7 +67,8 @@ def buscar_livro_por_id(id_livro: int,
 
     return livro
 
-@app.put("/livros/{id_livro}")
+@app.put("/livros/{id_livro}",
+         response_model=LivroResponse)
 def atualizar_livro(id_livro: int, livro_novo: LivroUpdate, 
                     service: LivroService = Depends(get_service)):
 
