@@ -3,8 +3,8 @@ from livro_repository import LivroRepository
 from buscar_livro_api import buscar_livro_por_isbn
 
 class LivroService:
-    def __init__(self):
-        self.repository = LivroRepository()
+    def __init__(self, repository):
+        self.repository = repository
 
     def cadastrar_por_isbn(self, isbn):
 
