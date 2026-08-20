@@ -1,4 +1,5 @@
 from api import app
+from unittest.mock import patch
 
 # Teste de API
 
@@ -29,6 +30,32 @@ def test_criar_livro(client):
     assert dados["id"] is not None
 
     app.dependency_overrides.clear()
+
+def test_cadastrar_livro_por_isbn(client):    
+
+    isbn = "8576082675"
+
+    dados_mock = {
+        "titulo": "Clean Code",
+        "autor": "Robert C. Martin",
+        "ano": 2008
+    }
+
+    with patch("livro_service.buscar_livro_por_isbn",
+               return_value=dados_mock
+     ):
+        
+        response = client.post(
+                f"/livros/isbn/{isbn}"
+            )
+
+    assert response.status_code == 201
+
+    dados = response.json()
+
+    assert dados["titulo"] == "Clean Code"
+    assert dados["autor"] == "Robert C. Martin"
+    assert dados["ano"] == 2008
 
 def test_listar_livros(client):
 
@@ -64,6 +91,43 @@ def test_buscar_livro_por_id(client):
     dados = response.json()
 
     assert dados["id"]==id_criacao
+
+def test_buscar_livro_por_autor(client):
+    response_criacao = client.post("/livros",
+                    json={
+                        "titulo": "Python Fluente",
+                        "autor": "Luciano Ramalho",
+                        "ano": 2022
+                    })
+
+    autor_criacao = response_criacao.json()["autor"]
+    response = client.get(f"/livros/autor",
+                          params={
+                              "autor": autor_criacao
+                          })
+
+    assert response.status_code==200
+    dados = response.json()
+
+    assert dados[0]["autor"] == autor_criacao
+
+def test_buscar_livro_por_titulo(client):
+    response_criacao = client.post("/livros",
+                    json={
+                        "titulo": "Python Fluente",
+                        "autor": "Luciano Ramalho",
+                        "ano": 2022
+                    })
+
+    response = client.get(f"/livros/titulo",
+                          params={
+                              "titulo": "Python"
+                          })
+
+    assert response.status_code==200
+    dados = response.json()
+
+    assert dados[0]["titulo"] == "Python Fluente"
 
 def test_criar_livro_dados_invalidos(client):
 

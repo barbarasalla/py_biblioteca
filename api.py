@@ -4,6 +4,7 @@ from database import SessionLocal, Base, engine
 from livro_service import LivroService
 from livro_repository import LivroRepository
 from schemas import LivroResponse, LivroCreate, LivroUpdate
+from api_exceptions import LivroNaoEncontradoError, APIConsumeError, LivroDadosInvalidosError
 
 Base.metadata.create_all(engine)
 
@@ -52,6 +53,48 @@ def cadastrar_livro(dados: LivroCreate,
         dados.ano
     )
     return livro
+
+@app.post("/livros/isbn/{isbn}",
+          response_model=LivroResponse,
+          status_code=status.HTTP_201_CREATED)
+def cadastrar_livro_por_isbn(isbn: int,
+                             service: LivroService = Depends(get_service)):
+
+    try:
+        livro = service.cadastrar_por_isbn(isbn)
+    except LivroNaoEncontradoError as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=str(e)
+        )
+    except APIConsumeError as e:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=str(e)
+        )
+    except LivroDadosInvalidosError as e:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=str(e)
+        )
+
+    return livro
+
+@app.get("/livros/autor",
+         response_model=list[LivroResponse])
+def buscar_livro_por_autor(autor: str,
+                           service: LivroService = Depends(get_service)):
+
+    livros = service.buscar_por_autor(autor)
+    return livros
+
+@app.get("/livros/titulo",
+         response_model=list[LivroResponse])
+def buscar_livro_por_titulo(titulo: str,
+                           service: LivroService = Depends(get_service)):
+
+    livros = service.buscar_por_titulo(titulo)
+    return livros
 
 @app.get("/livros/{id_livro}",
          response_model=LivroResponse)

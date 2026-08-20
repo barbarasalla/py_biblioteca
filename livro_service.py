@@ -10,14 +10,11 @@ class LivroService:
 
         dados = buscar_livro_por_isbn(isbn)
 
-        if dados is None:
-            return
-
         livro = Livro(
-            dados["titulo"], dados["autor"], dados["ano"]
+            titulo=dados["titulo"], autor=dados["autor"], ano=dados["ano"]
         )
 
-        self.cadastrar_livro(livro)
+        self.repository.salvar(livro)
 
         return livro
 
