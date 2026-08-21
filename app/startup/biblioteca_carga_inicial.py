@@ -3,6 +3,7 @@ import json
 from app.database.database import SessionLocal
 from app.models.livro import Livro
 from app.repositories.livro_repository import LivroRepository
+from app.config import settings
 
 class BibliotecaCargaInicial:
 
@@ -14,7 +15,7 @@ class BibliotecaCargaInicial:
 
     def carregar(self):
         try:
-            with open("biblioteca.json", "r", encoding="utf-8") as arquivo:
+            with open(settings.biblioteca_json, "r", encoding="utf-8") as arquivo:
                 dados = json.load(arquivo)
 
             for item in dados:
