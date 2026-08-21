@@ -1,7 +1,7 @@
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from database import Base
+from app.database.database import Base
 
 
 class Livro(Base):                          # (Base) -> Indica que é um modelo gerenciado pelo SQLAlchemy
@@ -32,6 +32,12 @@ class Livro(Base):                          # (Base) -> Indica que é um modelo 
 
     ano: Mapped[int] = mapped_column(
         nullable=False
+    )
+
+    # Atributo criado depois da criação da tabela para testar Alembic
+    isbn: Mapped[str | None] = mapped_column(
+        String(13),
+        nullable=True   # Pode ter valores null, pois já existem livros na tabela sem ele
     )
 
     def exibir(self):

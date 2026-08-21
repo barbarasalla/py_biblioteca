@@ -1,16 +1,17 @@
 import pytest
 
-from livro import Livro
-from livro_repository import LivroRepository
-from livro_service import LivroService
-from api import app, get_service
+from app.models.livro import Livro
+from app.repositories.livro_repository import LivroRepository
+from app.services.livro_service import LivroService
+from app.main import app
+from app.dependencies import get_service
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 from fastapi.testclient import TestClient  # O FastAPI utiliza o httpx para o TestClient nas versões atuais, necessário importar httpx. 
 
-from database import Base
+from app.database.database import Base
 
 @pytest.fixture
 def livro():

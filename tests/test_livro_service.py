@@ -1,6 +1,6 @@
-from livro_service import LivroService
+from app.services.livro_service import LivroService
 from unittest.mock import Mock
-from livro import Livro
+from app.models.livro import Livro
 
 # Testes unitários (LivroService)
 

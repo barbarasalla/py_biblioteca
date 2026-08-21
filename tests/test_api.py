@@ -1,4 +1,4 @@
-from api import app
+from app.main import app
 from unittest.mock import patch
 
 # Teste de API
@@ -41,7 +41,7 @@ def test_cadastrar_livro_por_isbn(client):
         "ano": 2008
     }
 
-    with patch("livro_service.buscar_livro_por_isbn",
+    with patch("app.services.livro_service.buscar_livro_por_isbn",
                return_value=dados_mock
      ):
         

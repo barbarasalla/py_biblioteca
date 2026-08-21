@@ -1,6 +1,6 @@
-from livro import Livro
-from livro_repository import LivroRepository
-from buscar_livro_api import buscar_livro_por_isbn
+from app.models.livro import Livro
+from app.repositories.livro_repository import LivroRepository
+from app.apis.buscar_livro_api import buscar_livro_por_isbn
 
 class LivroService:
     def __init__(self, repository):

@@ -1,5 +1,5 @@
-from livro import Livro
-from livro_repository import LivroRepository
+from app.models.livro import Livro
+from app.repositories.livro_repository import LivroRepository
 
 # Testes de integração (LivroRepository -> SQLAlchemy -> SQLite :memory:)
 # Verifica se as partes realmente conseguem trabalhar juntas

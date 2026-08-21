@@ -1,40 +1,24 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 
-from database import SessionLocal, Base, engine
-from livro_service import LivroService
-from livro_repository import LivroRepository
-from schemas import LivroResponse, LivroCreate, LivroUpdate
-from api_exceptions import LivroNaoEncontradoError, APIConsumeError, LivroDadosInvalidosError
-
-Base.metadata.create_all(engine)
-
-app = FastAPI()
+from app.dependencies import get_service
+from app.services.livro_service import LivroService
+from app.schemas.schemas import LivroResponse, LivroCreate, LivroUpdate
+from app.exceptions.api_exceptions import LivroNaoEncontradoError, APIConsumeError, LivroDadosInvalidosError
 
 
-def get_service():          # SETUP # Função executada pelo FastAPI
+# grupo de endpoints
+router = APIRouter(
+    prefix="/livros",   # Define o prefixo para toda as rotas da classe
+    tags=["Livros"]
+)
 
-    session = SessionLocal()        # Cria uma sessão com o banco.
-
-    try:
-        repository = LivroRepository(session)   # Cria o Repository passando a Session
-
-        service = LivroService(repository)  # Cria o Service passando o Repository
-
-        yield service       # Entregue esse objeto para o endpoint, mas depois que o endpoint terminar, volte aqui para eu fazer a limpeza
-                            # yield: retorna um valor temporariamente, pausando a execução da função.
-                            # Quando a execução for retomada, ela continua a partir do yield.
-                            
-    finally:                # Executa de qualquer forma, mesmo que haja uma exceção
-        session.close() # TEARDOWN
-
-
-@app.get("/")
+@router.get("/")
 def inicio():
     return{
         "mensagem": "API da Biblioteca Funcionando!"
     }
 
-@app.get("/livros",
+@router.get("",
          response_model=list[LivroResponse]) # Essa rota retorna uma lista de LivroResponse
 def listar_livros(
      service: LivroService = Depends(get_service)   # Indica uma dependencia ao FastAPI, que para executar essa função, é necessário um service. E, para conseguir esse service, execute get_service()
@@ -42,7 +26,7 @@ def listar_livros(
     return service.listar_livros()
 
 
-@app.post("/livros",
+@router.post("",
           response_model=LivroResponse,
           status_code=status.HTTP_201_CREATED)
 def cadastrar_livro(dados: LivroCreate,
@@ -54,7 +38,7 @@ def cadastrar_livro(dados: LivroCreate,
     )
     return livro
 
-@app.post("/livros/isbn/{isbn}",
+@router.post("/isbn/{isbn}",
           response_model=LivroResponse,
           status_code=status.HTTP_201_CREATED)
 def cadastrar_livro_por_isbn(isbn: int,
@@ -80,7 +64,7 @@ def cadastrar_livro_por_isbn(isbn: int,
 
     return livro
 
-@app.get("/livros/autor",
+@router.get("/autor",
          response_model=list[LivroResponse])
 def buscar_livro_por_autor(autor: str,
                            service: LivroService = Depends(get_service)):
@@ -88,7 +72,7 @@ def buscar_livro_por_autor(autor: str,
     livros = service.buscar_por_autor(autor)
     return livros
 
-@app.get("/livros/titulo",
+@router.get("/titulo",
          response_model=list[LivroResponse])
 def buscar_livro_por_titulo(titulo: str,
                            service: LivroService = Depends(get_service)):
@@ -96,7 +80,7 @@ def buscar_livro_por_titulo(titulo: str,
     livros = service.buscar_por_titulo(titulo)
     return livros
 
-@app.get("/livros/{id_livro}",
+@router.get("/{id_livro}",
          response_model=LivroResponse)
 def buscar_livro_por_id(id_livro: int,
                         service: LivroService = Depends(get_service)):
@@ -110,7 +94,7 @@ def buscar_livro_por_id(id_livro: int,
 
     return livro
 
-@app.put("/livros/{id_livro}",
+@router.put("/{id_livro}",
          response_model=LivroResponse)
 def atualizar_livro(id_livro: int, livro_novo: LivroUpdate, 
                     service: LivroService = Depends(get_service)):
@@ -132,7 +116,7 @@ def atualizar_livro(id_livro: int, livro_novo: LivroUpdate,
         )
     return livro
 
-@app.delete("/livros/{id_livro}",
+@router.delete("/{id_livro}",
             status_code=status.HTTP_204_NO_CONTENT)
 def deletar_livro(id_livro: int,
                   service: LivroService = Depends(get_service)):

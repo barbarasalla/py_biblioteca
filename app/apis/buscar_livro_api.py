@@ -1,6 +1,6 @@
 import requests
 
-from api_exceptions import LivroNaoEncontradoError, APIConsumeError, LivroDadosInvalidosError
+from app.exceptions.api_exceptions import LivroNaoEncontradoError, APIConsumeError, LivroDadosInvalidosError
 
 
 def fazer_requisicao(url):
