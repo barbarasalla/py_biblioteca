@@ -1,4 +1,4 @@
-from livro import Livro
+from app.models.livro import Livro
 
 def test_criar_livro():
     livro = Livro(

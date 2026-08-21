@@ -1,7 +1,7 @@
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from database import Base
+from app.database.database import Base
 
 
 class Livro(Base):                          # (Base) -> Indica que é um modelo gerenciado pelo SQLAlchemy

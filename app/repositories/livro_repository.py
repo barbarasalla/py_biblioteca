@@ -1,7 +1,7 @@
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from livro import Livro
+from app.models.livro import Livro
 
 class LivroRepository:
 

@@ -1,12 +1,13 @@
 import json
 
-from livro import Livro
-from livro_repository import LivroRepository
+from app.database.database import SessionLocal
+from app.models.livro import Livro
+from app.repositories.livro_repository import LivroRepository
 
 class BibliotecaCargaInicial:
 
-    def __init__(self):
-        self.repository = LivroRepository()
+    def __init__(self, repository):
+        self.repository = repository
 
         if not self.repository.existe_livros():
             self.carregar()
@@ -25,10 +26,14 @@ class BibliotecaCargaInicial:
             print("Não foi possível carregar dados do arquivo 'biblioteca.json'!")
 
 
-   
+def carregar_biblioteca():
 
-    
+    session = SessionLocal()
 
+    try:
+        repository = LivroRepository(session)
 
+        BibliotecaCargaInicial(repository)
 
-    
+    finally:
+        session.close()
