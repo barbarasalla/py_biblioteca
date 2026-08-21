@@ -4,6 +4,11 @@ from app.services.livro_service import LivroService
 
 
 def get_service():          # SETUP # Função executada pelo FastAPI
+    """
+    Cria as dependências necessárias para atender uma requisição.
+
+    Fluxo: Session -> Repository -> Service
+    """
 
     session = SessionLocal()        # Cria uma sessão com o banco.
 

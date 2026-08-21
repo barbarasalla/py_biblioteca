@@ -34,6 +34,12 @@ class Livro(Base):                          # (Base) -> Indica que é um modelo 
         nullable=False
     )
 
+    # Atributo criado depois da criação da tabela para testar Alembic
+    isbn: Mapped[str | None] = mapped_column(
+        String(13),
+        nullable=True   # Pode ter valores null, pois já existem livros na tabela sem ele
+    )
+
     def exibir(self):
         print(
             f"ID: {self.id} | "
