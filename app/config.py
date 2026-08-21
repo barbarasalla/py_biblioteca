@@ -1,3 +1,4 @@
+# Necessário importar o pydantic-settings para gerenciar as configurações (variaveis de ambiente, arquivo .env)
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):   # O BaseModel do Pydantic, mas voltado para configurações.
