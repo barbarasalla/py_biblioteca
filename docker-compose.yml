@@ -1,0 +1,29 @@
+services:
+
+  api:
+    # Constrói a imagem utilizando o Dockerfile
+    # localizado na raiz do projeto.
+    build: .
+
+    # Nome do container.
+    container_name: biblioteca-api
+
+    # Expõe a porta 8000 do container
+    # na porta 8000 do computador.
+    ports:
+      - "8000:8000"
+
+    # Carrega as variáveis de ambiente
+    # utilizadas pela aplicação.
+    env_file:
+      - .env.docker
+
+    # Persiste o banco SQLite fora do
+    # filesystem temporário do container.
+    volumes:
+      - biblioteca-data:/app/data
+
+
+# Declara o volume utilizado pelo serviço.
+volumes:
+  biblioteca-data:

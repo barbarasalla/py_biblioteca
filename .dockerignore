@@ -1,0 +1,22 @@
+# Git
+.git
+.gitignore
+
+# Configurações locais
+.env
+
+# Banco local
+*.db
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Testes
+.pytest_cache/
+.coverage
+htmlcov/
+
+# IDE
+.idea/
+.vscode/
